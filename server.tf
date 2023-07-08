@@ -7,6 +7,9 @@ resource "aws_instance" "example" {
   instance_type          = var.instance_type
   key_name               = var.key_name
   vpc_security_group_ids = ["${aws_security_group.main.id}"]
+  metadata_options {
+    http_tokens = "required"
+  }
 
   root_block_device {
     encrypted = true

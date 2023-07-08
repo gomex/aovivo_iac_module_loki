@@ -1,3 +1,4 @@
+#tfsec:ignore:aws-ec2-no-public-egress-sgr
 resource "aws_security_group" "main" {
   vpc_id      = data.aws_vpc.main.id
   description = "Liberar toda saida"
