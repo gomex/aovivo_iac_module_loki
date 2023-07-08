@@ -1,0 +1,58 @@
+name: Pull Request - Check terraform code
+
+on:
+  pull_request:
+
+permissions: 
+  checks: write
+  contents: write
+  id-token: write
+  packages: write
+  pull-requests: write
+
+jobs:
+  check-terraform:
+    name: check terraform code
+    runs-on: ubuntu-20.04
+    env:
+      AWS_REGION: "us-east-2"
+
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+        with:
+          ref: ${{github.event.pull_request.head.ref}}
+          fetch-depth: 0
+      
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: ${{ inputs.terraform_version }}
+
+      - name: Initialize Terraform
+        run: terraform init -backend=false
+        
+      - name: Validate Terraform configuration
+        run: terraform validate
+
+      - name: Format Terraform code
+        run: terraform fmt -check -recursive
+
+      - name: tfsec
+        uses: aquasecurity/tfsec-action@v1.0.0
+
+  terraform-docs:
+    name: Update terraform docs
+    runs-on: ubuntu-20.04
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        ref: ${{ github.event.pull_request.head.ref }}
+
+    - name: Render terraform docs and push changes back to PR
+      uses: terraform-docs/gh-actions@main
+      with:
+        working-dir: .
+        output-file: README.md
+        output-method: inject
+        git-push: "true"
