@@ -6,18 +6,9 @@ data "aws_vpc" "main" {
   }
 }
 
-data "aws_ami" "custom_ami" {
-  most_recent = true
-
-  filter {
-    name   = "name"
-    values = ["loki-*"]
-  }
-
-  filter {
-    name   = "tag:OS_Version"
-    values = ["Ubuntu"]
-  }
-
-  owners = ["405151343467"]
+data "hcp_packer_image" "loki" {
+  bucket_name    = "loki"
+  channel        = "prod"
+  cloud_provider = "aws"
+  region         = "us-east-1"
 }

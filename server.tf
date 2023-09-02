@@ -3,7 +3,7 @@ provider "aws" {
 }
 
 resource "aws_instance" "example" {
-  ami                    = data.aws_ami.custom_ami.id
+  ami                    = data.hcp_packer_image.loki.cloud_image_id
   instance_type          = var.instance_type
   key_name               = var.key_name
   vpc_security_group_ids = ["${aws_security_group.main.id}"]
